@@ -65,12 +65,7 @@ def completeboard():
 
 def updatepos(msg):
   global lets
-  pos = open('Data/posdat.txt', 'r+')
-  counter = -1
-  lines = pos.readlines()
-  for j in lines:
-    counter += 1
-    lines[counter] = j.rstrip('\n')
+  lines = getpos()
   start = ""
   end = ""
   beforedash = True
@@ -84,11 +79,29 @@ def updatepos(msg):
       end += a
   addnums = lets.index(start[1])
   addnume = lets.index(end[0])
-  totals = int(start[2]) + (addnums * 8)
-  totale = int(end[1]) + (addnume * 8)
+  totals = int(start[2]) + (addnums * 8) - 1
+  totale = int(end[1]) + (addnume * 8) - 1
   location = lines.index(start[0] + str(totals))
   editedlines = lines
   editedlines[location] = start[0] + str(totale)
+  counter = -1
+  pos = open('Data/posdat.txt', 'r')
+
+
+  
+  lines = pos.readlines()
+  for c in lines:
+    counter = -1
+    numberrrrr = ""
+    for d in c:
+      counter += 1
+      if counter > 0:
+        numberrrrr += d
+    numberrrrr = int(numberrrrr)
+    if totale == numberrrrr:
+      del editedlines[editedlines.index(c.rstrip('\n'))]
+    
+
   counter = -1
   for b in editedlines:
     counter += 1
@@ -96,11 +109,15 @@ def updatepos(msg):
       editedlines[counter - 1] += "\n"
 
   pos.close()
+
   pos = open('Data/posdat.txt', 'w')
   pos.writelines(editedlines)
 
-resetboard()
-while True:
-  completeboard()
-  print("\nFormat: Pg5-e5")
-  updatepos(input())
+def main():
+  resetboard()
+  while True:
+    completeboard()
+    print("\nFormat: Pg5-e5")
+    updatepos(input())
+
+main()
