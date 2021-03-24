@@ -1,51 +1,102 @@
 lets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+names = ["p", "n", "k", "q", "c", "r"]
 import os
 
-def checkinput(msg, pos, tns, mov, test):
+def checkinput(msg, pos, tns, movecount, movediff):
+  global lets
+  global names
 
   location = pos.index(msg[0] + str(msg[1]))
 
-  moves = [[8, 9, 7, 16]]
-  reqpiece = [[-1, 1, 1, -1]]
-  firstmove = [[False, False, False, True]]
+  valpiece = False
+  
 
-  if msg[0].lower() == "p":
+  moveset = [[8, 9, 7, 16], [15, 17, 10, 6, -15, -17, -10, -6], [1, 8, 9, 7, -1, -8, -9, -7], [7, 9, 8, 1, -7, -9, -8, -1]]
 
-    multiplier = 1
-    if msg[0] == "P":
-      multiplier = -1
-    
-    return smallmoveset(moves, reqpiece, firstmove, test, multiplier, msg, mov, location)    
+  requirepiece = [[-1, 1, 1, -1], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
 
-def smallmoveset(moves, reqpiece, firstmove, test, multiplier, msg, movecount, location):
-  counter = -1
-  for a in moves:
-    counter += 1
-    if a*multiplier == test:
-      if firstmove[counter] == False:
-        if reqpiece[counter] == 1:
-          if msg[2] in getposnumbers():
+  firstmove = [[False, False, False, True], [False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False]]
+
+  onemove = True
+  color = 1
+  if msg[0] == "P": color = -1
+
+  place = names.index(msg[0].lower())
+  if place > 2: onemove = False
+
+  if onemove:
+    return smallmoveset(moveset, requirepiece, firstmove, movediff, color, msg, movecount, location, place) 
+  else:
+    return longmoveset(moveset, firstmove, movediff,movecount, place)
+
+def smallmoveset(moveset, requirepiece, firstmove, movediff, color, msg, movecount, location, place):
+  if movediff*color in moveset[place]:
+    movindex = moveset[place].index(movediff*color)
+    if requirepiece[place][movindex] == 1:
+      if firstmove[place][movindex] == True:# valid requires piece and can only move on first turn
+
+
+        Detected = False
+        for a in getposnumbers():
+          if int(a) == msg[2]:
+            Detected = True
+        if Detected == True:
+          if movecount[location] == "0":
             return True
-        elif reqpiece[counter] == 0:
+
+
+      else:# valid requires piece
+
+        Detected = False
+        for a in getposnumbers():
+          if int(a) == msg[2]:
+            Detected = True
+        if Detected == True:
           return True
-        elif reqpiece[counter] == -1:
-          if not(msg[2] in getposnumbers()):
-            return True
-      else:
-        if movecount[location] == '0':
-          if reqpiece[counter] == 1:
-            if msg[2] in getposnumbers():
-              return True
-          elif reqpiece[counter] == 0:
-            return True
-          elif reqpiece[counter] == -1:
-            if not(msg[2] in getposnumbers()):
-              return True
-      
+
+
+    elif requirepiece[place][movindex] == 0:
+      if firstmove[place][movindex] == True: # valid can move whenever as long as first move
+
+        if movecount[location] == "0":
+            return True 
+
+
+      else:# can move wherever whenever
+
+        return True 
+
+
+    elif requirepiece[place][movindex] == -1:
+      if firstmove[place][movindex] == True:# valid requires there to be no piece and it to be the first move
+
+        Detected = False
+        for a in getposnumbers():
+          if int(a) == msg[2]:
+            Detected = True
+        if Detected == False:
+          if movecount[location] == "0":
+            return True 
+
+
+      else:# valid requires there to be no piece
+
+
+        Detected = False
+        for a in getposnumbers():
+          if int(a) == msg[2]:
+            Detected = True
+        if Detected == False:
+          return True 
+    
+def longmoveset(moveset, firstmove, movediff, movecount, place):
+  pass
+  
+  
 
 def resetboard():
   board = open('Data/posdat.txt', 'w')
-  moves = open('Data/Movedat.txt', 'w')
+  moves = open('Data/Movecount.txt', 'w')
   movetxt = []
   for a in range(32):
     movetxt.append('0\n')
@@ -146,7 +197,7 @@ def getinpstuff(msg):
   return [start[0], totals, totale]
 def updatepos(msg):
   lines = get('Data/posdat.txt')
-  moves = get('Data/Movedat.txt')
+  moves = get('Data/Movecount.txt')
 
   start = getinpstuff(msg)
 
@@ -189,25 +240,39 @@ def updatepos(msg):
   pos.close()
 
   pos = open('Data/posdat.txt', 'w')
-  mov = open('Data/Movedat.txt', 'w')
+  mov = open('Data/Movecount.txt', 'w')
   mov.writelines(editedmoves)
   pos.writelines(editedlines)
+
+def formated(mes):
+  global names
+  global lets
+  if not(len(mes) == 6): return False
+  if not(mes[3] == "-"): return False
+  if not(mes[0].lower() in names): return False
+  if not(mes[1] in lets and mes[4] in lets): return False
+  mesclean = getinpstuff(mes)
+  if not(mesclean[1] in getposnumbers()): return False
+  if mesclean[1] > 63 or mesclean[2] > 63: return False
+  return True
 
 def main():
   resetboard()
   turns = 0
   while True:
     turns += 1
-    moves = get('Data/Movedat.txt')
+    moves = get('Data/Movecount.txt')
     posdata = get('Data/posdat.txt')
     completeboard()
     print("\nFormat: Pg5-e5")
     answer = input()
-    inputclean = getinpstuff(answer)
-    check = checkinput(inputclean, posdata, turns, moves, inputclean[2] - inputclean[1])
-    if check == True:
-      updatepos(answer)
-    os.system('clear')
+    check2 = formated(answer)
+    if check2:
+      inputclean = getinpstuff(answer)
+      check = checkinput(inputclean, posdata, turns, moves, inputclean[2] - inputclean[1])
+      if check:
+        updatepos(answer)
+      #os.system('clear')
 
 
 main()
