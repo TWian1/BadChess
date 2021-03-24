@@ -272,7 +272,7 @@ def main():
       check = checkinput(inputclean, posdata, turns, moves, inputclean[2] - inputclean[1])
       if check:
         updatepos(answer)
-      #os.system('clear')
+      os.system('clear')
 
 
 main()
