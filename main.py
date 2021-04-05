@@ -38,28 +38,23 @@ def smallmoveset(moveset, requirepiece, firstmove, movediff, color, msg, movecou
 
         Detected = False
         for a in getposnumbers():
-          if int(a) == msg[2]:
-            Detected = True
+          if int(a) == msg[2]: Detected = True
         if Detected == True:
-          if movecount[location] == "0":
-            return True
+          if movecount[location] == "0": return True
 
 
       else:# valid requires piece
 
         Detected = False
         for a in getposnumbers():
-          if int(a) == msg[2]:
-            Detected = True
-        if Detected == True:
-          return True
+          if int(a) == msg[2]: Detected = True
+        if Detected == True: return True
 
 
     elif requirepiece[place][movindex] == 0:
       if firstmove[place][movindex] == True: # valid can move whenever as long as first move
 
-        if movecount[location] == "0":
-            return True 
+        if movecount[location] == "0": return True 
 
 
       else:# can move wherever whenever
@@ -72,11 +67,9 @@ def smallmoveset(moveset, requirepiece, firstmove, movediff, color, msg, movecou
 
         Detected = False
         for a in getposnumbers():
-          if int(a) == msg[2]:
-            Detected = True
+          if int(a) == msg[2]: Detected = True
         if Detected == False:
-          if movecount[location] == "0":
-            return True 
+          if movecount[location] == "0": return True 
 
 
       else:# valid requires there to be no piece
@@ -84,10 +77,8 @@ def smallmoveset(moveset, requirepiece, firstmove, movediff, color, msg, movecou
 
         Detected = False
         for a in getposnumbers():
-          if int(a) == msg[2]:
-            Detected = True
-        if Detected == False:
-          return True 
+          if int(a) == msg[2]: Detected = True
+        if Detected == False: return True 
     
 def longmoveset(moveset, firstmove, movediff, movecount, place):
   pass
@@ -127,15 +118,13 @@ def updateboard(pos): #takes the data and converts it for visuals
     counter += 1
     boa.append([])
     for a2 in a1:
-      if a2 == "\n":
-        continue
+      if a2 == "\n": continue
       boa[counter].append(a2)
   boardtemp.close()
   for a in pos:
     last = ""
     for b in a:
-      if a.index(b) > 0:
-        last += b
+      if a.index(b) > 0: last += b
     last = int(last)
     yscale = 0
     xscale = 0
@@ -167,8 +156,7 @@ def getposnumbers():
     counter = 0
     for b in a:
       counter += 1
-      if counter > 1:
-        newline += b
+      if counter > 1: newline += b
     newlines.append(int(newline))
   return newlines
 
@@ -186,10 +174,8 @@ def getinpstuff(msg):
     if a == "-":
       beforedash = False
       continue
-    elif beforedash == True:
-      start += a
-    else:
-      end += a
+    elif beforedash == True: start += a
+    else: end += a
   addnums = lets.index(start[1])
   addnume = lets.index(end[0])
   totals = int(start[2]) + (addnums * 8) - 1
@@ -219,23 +205,19 @@ def updatepos(msg):
     numberrrrr = ""
     for d in c:
       counter += 1
-      if counter > 0:
-        numberrrrr += d
+      if counter > 0: numberrrrr += d
     numberrrrr = int(numberrrrr)
-    if start[2] == numberrrrr:
-      del editedlines[editedlines.index(c.rstrip('\n'))]
+    if start[2] == numberrrrr: del editedlines[editedlines.index(c.rstrip('\n'))]
     
 
   counter = -1
   for b in editedlines:
     counter += 1
-    if counter > 0:
-      editedlines[counter - 1] += "\n"
+    if counter > 0: editedlines[counter - 1] += "\n"
   counter = -1
   for b in editedmoves:
     counter += 1
-    if counter > 0:
-      editedmoves[counter - 1] += "\n"
+    if counter > 0: editedmoves[counter - 1] += "\n"
 
   pos.close()
 
@@ -266,12 +248,9 @@ def main():
     completeboard()
     print("\nFormat: Pg5-e5")
     answer = input()
-    check2 = formated(answer)
-    if check2:
+    if formated(answer):
       inputclean = getinpstuff(answer)
-      check = checkinput(inputclean, posdata, turns, moves, inputclean[2] - inputclean[1])
-      if check:
-        updatepos(answer)
+      if checkinput(inputclean, posdata, turns, moves, inputclean[2] - inputclean[1]):  updatepos(answer)
       os.system('clear')
 
 
